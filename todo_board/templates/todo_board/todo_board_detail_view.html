@@ -6,6 +6,7 @@
             {{ todo_list }}
             <h2>{{ todo_list.title }}</h2>
             <p>{{ todo_list.content | linebreaksbr }}</p>
+            <h2><a href="{% url 'todo_board:todo_board_update' pk=todo_list.pk %}"> 수정 </a></h2>
         </div>
     </section>
 {% endblock main %}
