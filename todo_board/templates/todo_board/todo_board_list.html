@@ -1,0 +1,15 @@
+{% extends 'todo_main/common/header.html' %}
+{% load static %}
+{% block main %}
+    <div class="col-md-12">
+        <div class="container">
+            {% for list in todo_list %}
+                <a href="{% url 'todo_board:todo_board_detail' pk=list.no %}">{{list.title}}</a> <br>
+            {% endfor %}
+        </div>
+    </div>
+
+    <button type="button" class="btn btn-primary" onclick="location.href='{% url 'todo_board:todo_board_insert' %} '">
+        일정추가
+    </button>
+{% endblock main %}
