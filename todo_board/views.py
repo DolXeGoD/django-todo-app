@@ -33,6 +33,12 @@ class Todo_board_update(generic.UpdateView):
 
         return self.render_to_response(context)
 
+class Todo_board_delete(generic.DeleteView):
+    model = TbTodoList
+    success_url = '/board/'
+    context_object_name = 'todo_list'
+
+
 def check_post(request):
     template_name = 'todo_board/todo_board_success.html'
 
