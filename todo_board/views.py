@@ -1,3 +1,4 @@
+from django.http import JsonResponse
 from django.shortcuts import render
 from .models import TbTodoList
 from .forms import TodoForm
@@ -8,7 +9,14 @@ class Todo_board(generic.TemplateView):
     def get(self, request, *args, **kwargs):
         template_name = 'todo_board/todo_board_list.html'
         todo_list = TbTodoList.objects.all()
-        return render(request, template_name, {"todo_list" : todo_list})
+
+        # 진행 중인 할 일
+        incomplete_todo_list = TbTodoList.objects.all().filter(end_date__isnull=False, is_complete=0).order_by('priority')
+
+        # 마감된 할 일
+        complete_todo_list = TbTodoList.objects.all().filter(is_complete=1).order_by('priority')
+
+        return render(request, template_name, {"incomplete_todo_list" : incomplete_todo_list, "complete_todo_list" : complete_todo_list})
 
 class Todo_board_detail(generic.DetailView):
     model = TbTodoList
@@ -43,17 +51,37 @@ def check_post(request):
     template_name = 'todo_board/todo_board_success.html'
 
     if request.method == "POST":
-        form = TodoForm(request.POST)
+        if str(request.path).split("/board/")[1].split("/")[0] == "insert":
+            form = TodoForm(request.POST)
+            if form.is_valid():
+                todo = form.save(commit=False)
+                todo.todo_save()
+                message = "일정 추가 완료"
+                return render(request, template_name, {"message" : message})
 
-        if form.is_valid():
-            todo = form.save(commit=False)
-            todo.todo_save()
-            message = "일정 추가 완료"
-            return render(request, template_name, {"message" : message})
+        elif str(request.path).split("/board/")[1].split("/")[0] == "is_complete":
+            pk = request.POST['data']
+            return_value = checkbox_event(pk, True)
+            return JsonResponse(return_value)
+
+        elif str(request.path).split("/board/")[1].split("/")[0] == "is_incomplete":
+            pk = request.POST['data']
+            return_value = checkbox_event(pk, False)
+            return JsonResponse(return_value)
 
     else:
         template_name = 'todo_board/todo_board_insert.html'
         form = TodoForm
         return render(request, template_name, {"form" : form})
 
-
+# 마감 체크박스 관련 함수
+def checkbox_event(pk, is_check):
+    todo_selected = TbTodoList.objects.get(pk=pk) # 해당 인덱스의 데이터를 가져옴
+    if is_check == True: # 체크 시
+        todo_selected.is_complete = 1 # 완료로 변경
+        todo_selected.priority = None
+    else: # 체크 해제 시
+        todo_selected.is_complete = 0 # 미완료로 변경
+    todo_selected.save()
+    return_value = {'text': '저장되었습니다.'}
+    return return_value

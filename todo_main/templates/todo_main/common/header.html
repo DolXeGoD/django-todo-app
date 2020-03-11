@@ -9,6 +9,7 @@
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
     <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/js/bootstrap.min.js"></script>
     <title>Title</title>
+
 </head>
 <body>
     <nav class="navbar navbar-default">
@@ -26,4 +27,45 @@
 
     {% endblock main %}
 </body>
+
+{# 체크박스 ajax 스크립트 #}
+    <script>
+        completed = document.getElementsByName('complete');
+        for(var i = 0; i < completed.length; i++){
+            completed[i].checked =true;
+        }
+
+        $("input[name*=complete]").change(function () {
+            if($(this).is(":checked")){
+                pk = $(this).attr('data-id');
+                $.ajax({
+                    type : "POST",
+                    url : "{% url 'todo_board:todo_board_is_complete' %}",
+                    data : {'data' : pk, 'csrfmiddlewaretoken' : '{{ csrf_token }}'},
+                    dataType : "json",
+                    success: function (response) {
+                        window.location.href = "{% url 'todo_board:todo_board' %}"
+                    },
+                    error: function (request, status, error) {
+                        console.log("실패");
+                    },
+                });
+            }
+            else{
+                pk = $(this).attr('data-id');
+                $.ajax({
+                    type : "POST",
+                    url : "{% url 'todo_board:todo_board_is_incomplete' %}",
+                    data : {'data' : pk, 'csrfmiddlewaretoken' : '{{ csrf_token }}'},
+                    dataType : "json",
+                    success: function (response) {
+                        window.location.href = "{% url 'todo_board:todo_board' %}"
+                    },
+                    error: function (request, status, error) {
+                        console.log("실패");
+                    },
+                });
+            }
+        });
+    </script>
 </html>
