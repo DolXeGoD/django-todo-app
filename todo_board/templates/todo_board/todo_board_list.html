@@ -1,15 +1,31 @@
 {% extends 'todo_main/common/header.html' %}
 {% load static %}
 {% block main %}
-    <div class="col-md-12">
-        <div class="container">
-            {% for list in todo_list %}
-                <a href="{% url 'todo_board:todo_board_detail' pk=list.no %}">{{list.title}}</a> <br>
-            {% endfor %}
+
+    <div class="container">
+        <div class="row">
+            <div class="col-sm-6">
+                <h2>진행 중인 일정</h2><br>
+                <ul class="list-group">
+                    {% for list in todo_list %}
+                        <li class="list-group-item"><a href="{% url 'todo_board:todo_board_detail' pk=list.no %}">{{list.title}}</a> <br></li>
+                    {% endfor %}
+                </ul>
+            </div>
+
+            <div class="col-sm-6">
+                <h2>마감된 일정</h2><br>
+                <ul class="list-group">
+                    <li class="list-group-item">아직 마감된 일정이 없습니다.</li>
+                </ul>
+            </div>
+        </div>
+
+        <div class="row">
+             <button type="button" class="btn btn-primary" onclick="location.href='{% url 'todo_board:todo_board_insert' %} '">
+                일정추가
+            </button>
         </div>
     </div>
 
-    <button type="button" class="btn btn-primary" onclick="location.href='{% url 'todo_board:todo_board_insert' %} '">
-        일정추가
-    </button>
 {% endblock main %}
