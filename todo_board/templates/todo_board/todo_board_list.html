@@ -7,8 +7,12 @@
             <div class="col-sm-6">
                 <h2>진행 중인 일정</h2><br>
                 <ul class="list-group">
-                    {% for list in todo_list %}
-                        <li class="list-group-item"><a href="{% url 'todo_board:todo_board_detail' pk=list.no %}">{{list.title}}</a> <br></li>
+                    {% for list in incomplete_todo_list %}
+                        <li class="list-group-item">
+                            <input type="checkbox" data-id={{list.no}} name="incomplete" value={{list.title}}>
+                            <a href="{% url 'todo_board:todo_board_detail' pk=list.no %}">{{list.title}}</a>
+                            <br>
+                        </li>
                     {% endfor %}
                 </ul>
             </div>
@@ -16,7 +20,19 @@
             <div class="col-sm-6">
                 <h2>마감된 일정</h2><br>
                 <ul class="list-group">
-                    <li class="list-group-item">아직 마감된 일정이 없습니다.</li>
+                    {% if complete_todo_list|length > 0 %}
+                        {% for list in complete_todo_list %}
+                            <li class="list-group-item">
+                                <input type="checkbox" data-id={{list.no}} name="complete" value={{list.title}}>
+                                <a href="{% url 'todo_board:todo_board_detail' pk=list.no %}">{{list.title}}</a>
+                                <br>
+                            </li>
+                        {% endfor %}
+                    {% else %}
+                        <li class="list-group-item">
+                            마감된 일정이 없습니다 :)
+                        </li>
+                    {% endif %}
                 </ul>
             </div>
         </div>
